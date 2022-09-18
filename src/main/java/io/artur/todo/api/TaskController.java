@@ -7,6 +7,8 @@ import io.artur.todo.data.Task;
 import io.artur.todo.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,9 +36,9 @@ public class TaskController {
 
     @GetMapping(path = "/tasks")
     @ResponseStatus(HttpStatus.OK)
-    public List<TaskResponse> getAll() {
+    public List<TaskResponse> getAll(@AuthenticationPrincipal Jwt jwt) {
 
-        return taskService.getAllByUserId("")
+        return taskService.getAllByUserId(jwt.getClaim("id"))
                 .stream()
                 .map(t -> new TaskResponse(t.getId(), t.getTitle(), t.getDescription()))
                 .collect(Collectors.toList());
@@ -44,25 +46,28 @@ public class TaskController {
 
     @PostMapping("/tasks")
     @ResponseStatus(HttpStatus.CREATED)
-    public TaskResponse create(@RequestBody @Valid TaskCreateRequest request) {
+    public TaskResponse create(@RequestBody @Valid TaskCreateRequest request,
+                               @AuthenticationPrincipal Jwt jwt) {
 
-        Task task = taskService.create(request);
+        Task task = taskService.create(request, jwt.getClaim("id"));
         return new TaskResponse(task.getId(), task.getTitle(), task.getDescription());
     }
 
     @PutMapping("/tasks/{id}")
     @ResponseStatus(HttpStatus.OK)
     public TaskResponse update(@PathVariable("id") String taskId,
-                               @RequestBody @Valid TaskUpdateRequest request) {
+                               @RequestBody @Valid TaskUpdateRequest request,
+                               @AuthenticationPrincipal Jwt jwt) {
 
-        Task task = taskService.update(taskId, request);
+        Task task = taskService.update(taskId, jwt.getClaim("id"), request);
         return new TaskResponse(task.getId(), task.getTitle(), task.getDescription());
     }
 
     @DeleteMapping("/tasks/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable("id") String taskId) {
+    public void delete(@PathVariable("id") String taskId,
+                       @AuthenticationPrincipal Jwt jwt) {
 
-        taskService.delete(taskId);
+        taskService.delete(taskId, jwt.getClaim("id"));
     }
 }

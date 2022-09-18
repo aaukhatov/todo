@@ -22,7 +22,7 @@ public class Task {
 
     @Field("userId")
     @DocumentReference
-    private User userId;
+    private User user;
 
     private String title;
 

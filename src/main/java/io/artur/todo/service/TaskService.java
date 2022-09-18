@@ -5,6 +5,7 @@ import io.artur.todo.api.data.TaskUpdateRequest;
 import io.artur.todo.data.Task;
 import io.artur.todo.data.User;
 import io.artur.todo.repository.TaskRepository;
+import io.artur.todo.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,28 +22,27 @@ public class TaskService {
     private static final Logger log = LoggerFactory.getLogger(TaskService.class);
 
     private final TaskRepository repository;
+    private final UserRepository userRepository;
     private final Clock systemUTC = Clock.systemUTC();
 
     @Autowired
-    public TaskService(TaskRepository repository) {
+    public TaskService(TaskRepository repository, UserRepository userRepository) {
         this.repository = repository;
+        this.userRepository = userRepository;
     }
 
     public List<Task> getAllByUserId(String userId) {
         log.info("Getting TODOs by userId: {}", userId);
-        return repository.findAll();
+        return repository.findByUserId(userId);
     }
 
-    public Task create(TaskCreateRequest createTask) {
+    public Task create(TaskCreateRequest createTask, String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new TaskServiceException("Unexpected error, please try later"));
+        log.info("Creating a new task...");
         return repository.save(new Task(
                 UUID.randomUUID().toString(),
-                new User(
-                        UUID.randomUUID().toString(),
-                        "email",
-                        "Artur",
-                        Instant.now(systemUTC),
-                        null
-                ),
+                user,
                 createTask.getTitle(),
                 createTask.getDescription(),
                 Instant.now(systemUTC),
@@ -50,21 +50,18 @@ public class TaskService {
         ));
     }
 
-    public Task update(String taskId, TaskUpdateRequest request) {
-        Task task = repository.findById(taskId)
-                .orElseThrow(() -> new TaskNotFoundException(""));
+    public Task update(String taskId, String userId, TaskUpdateRequest request) {
+        Task task = repository.findByIdAndUserId(taskId, userId)
+                .orElseThrow(() -> new TaskNotFoundException("Cannot find the given task"));
 
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
-
+        task.setModifiedTs(Instant.now(systemUTC));
+        log.info("Editing a task {}", taskId);
         return repository.save(task);
     }
 
-    public void delete(String taskId) {
-        try {
-            repository.deleteById(taskId);
-        } catch (Exception e) {
-            throw new TaskServiceException("Maybe task %s is already deleted".formatted(taskId), e);
-        }
+    public void delete(String taskId, String userId) {
+        repository.deleteByIdAndUserId(taskId, userId);
     }
 }
