@@ -4,12 +4,13 @@
 
 - Java 17
 - Docker or Standalone Mongo DB
+- Google API Keys for OAuth2
 
 ## Build
 
 Go to the project directory
 ```shell
-gradlew build
+./gradlew build
 ```
 
 ## Run Mongo DB
@@ -20,8 +21,12 @@ docker run -it --rm -p 27017:27017 mongo
 
 ## Run TODO
 
+In order to authorize we need Google API Keys.
+
+> If you're going to use your `client_id`, please be sure to set up these redirects: http://localhost:8080/oauth2/authorization/google, http://localhost:8080/login/oauth2/code/google
+
 ```shell
-java -jar build/libs/todo-0.0.1-SNAPSHOT.jar
+env GOOGLE_CLIENT_ID=<value> GOOGLE_CLIENT_SECRET=<value> java -jar build/libs/todo-0.0.1-SNAPSHOT.jar
 ```
 
 ## Acquire JWT token
