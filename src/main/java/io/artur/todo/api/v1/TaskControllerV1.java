@@ -1,5 +1,6 @@
 package io.artur.todo.api.v1;
 
+import io.artur.todo.api.ApiResponse;
 import io.artur.todo.api.v1.data.TaskCreateRequest;
 import io.artur.todo.api.v1.data.TaskResponse;
 import io.artur.todo.api.v1.data.TaskUpdateRequest;
@@ -36,31 +37,32 @@ public class TaskControllerV1 {
 
     @GetMapping(path = "/tasks")
     @ResponseStatus(HttpStatus.OK)
-    public List<TaskResponse> getAll(@AuthenticationPrincipal Jwt jwt) {
+    public List<ApiResponse<TaskResponse>> getAll(@AuthenticationPrincipal Jwt jwt) {
 
         return taskService.getAllByUserId(jwt.getClaim("id"))
                 .stream()
                 .map(t -> new TaskResponse(t.getId(), t.getTitle(), t.getDescription()))
+                .map(ApiResponse::result)
                 .collect(Collectors.toList());
     }
 
     @PostMapping("/tasks")
     @ResponseStatus(HttpStatus.CREATED)
-    public TaskResponse create(@RequestBody @Valid TaskCreateRequest request,
+    public ApiResponse<TaskResponse> create(@RequestBody @Valid TaskCreateRequest request,
                                @AuthenticationPrincipal Jwt jwt) {
 
         Task task = taskService.create(request, jwt.getClaim("id"));
-        return new TaskResponse(task.getId(), task.getTitle(), task.getDescription());
+        return ApiResponse.result(new TaskResponse(task.getId(), task.getTitle(), task.getDescription()));
     }
 
     @PutMapping("/tasks/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public TaskResponse update(@PathVariable("id") String taskId,
+    public ApiResponse<TaskResponse> update(@PathVariable("id") String taskId,
                                @RequestBody @Valid TaskUpdateRequest request,
                                @AuthenticationPrincipal Jwt jwt) {
 
         Task task = taskService.update(taskId, jwt.getClaim("id"), request);
-        return new TaskResponse(task.getId(), task.getTitle(), task.getDescription());
+        return ApiResponse.result(new TaskResponse(task.getId(), task.getTitle(), task.getDescription()));
     }
 
     @DeleteMapping("/tasks/{id}")
