@@ -33,3 +33,4 @@ app:
       keystore-password: bael-pass
       key-alias: bael-oauth-jwt
       private-key-passphrase: bael-pass
+      ttl-minute: 30
