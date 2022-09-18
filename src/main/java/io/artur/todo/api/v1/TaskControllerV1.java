@@ -1,8 +1,8 @@
-package io.artur.todo.api;
+package io.artur.todo.api.v1;
 
-import io.artur.todo.api.data.TaskCreateRequest;
-import io.artur.todo.api.data.TaskResponse;
-import io.artur.todo.api.data.TaskUpdateRequest;
+import io.artur.todo.api.v1.data.TaskCreateRequest;
+import io.artur.todo.api.v1.data.TaskResponse;
+import io.artur.todo.api.v1.data.TaskUpdateRequest;
 import io.artur.todo.data.Task;
 import io.artur.todo.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +24,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/v1")
-public class TaskController {
+@RequestMapping("/api/v1")
+public class TaskControllerV1 {
 
     private final TaskService taskService;
 
     @Autowired
-    public TaskController(TaskService taskService) {
+    public TaskControllerV1(TaskService taskService) {
         this.taskService = taskService;
     }
 

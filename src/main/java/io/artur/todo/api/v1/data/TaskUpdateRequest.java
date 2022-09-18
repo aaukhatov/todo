@@ -1,4 +1,4 @@
-package io.artur.todo.api.data;
+package io.artur.todo.api.v1.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

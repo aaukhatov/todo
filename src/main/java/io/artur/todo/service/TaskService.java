@@ -1,7 +1,7 @@
 package io.artur.todo.service;
 
-import io.artur.todo.api.data.TaskCreateRequest;
-import io.artur.todo.api.data.TaskUpdateRequest;
+import io.artur.todo.api.v1.data.TaskCreateRequest;
+import io.artur.todo.api.v1.data.TaskUpdateRequest;
 import io.artur.todo.data.Task;
 import io.artur.todo.data.User;
 import io.artur.todo.repository.TaskRepository;
