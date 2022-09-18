@@ -29,7 +29,7 @@ server:
 app:
   security:
     jwt:
-      keystore-location: keys/bael-jwt.jks
+      keystore-location: keys/keystore.jks
       keystore-password: bael-pass
       key-alias: bael-oauth-jwt
       private-key-passphrase: bael-pass
