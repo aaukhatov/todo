@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: todo
+  main:
+    banner-mode: off
+  jackson:
+    time-zone: UTC
+    deserialization:
+      FAIL_ON_IGNORED_PROPERTIES: false
+      ADJUST_DATES_TO_CONTEXT_TIME_ZONE: false
+    serialization:
+      INDENT_OUTPUT: false
+      WRITE_DATES_AS_TIMESTAMPS: false
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/todo_db
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_SECRET}
+            scope: profile,email
+
+server:
+  port: 8080
+
+app:
+  security:
+    jwt:
+      keystore-location: keys/bael-jwt.jks
+      keystore-password: bael-pass
+      key-alias: bael-oauth-jwt
+      private-key-passphrase: bael-pass
