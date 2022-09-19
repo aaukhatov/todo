@@ -2,25 +2,26 @@ package io.artur.todo.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.artur.todo.security.JwtGenerateException;
-import io.artur.todo.security.Token;
 import io.artur.todo.security.JwtService;
+import io.artur.todo.security.Token;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.SecurityFilterChain;
 
 import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
     @Autowired
     private OAuth2UserService<OAuth2UserRequest, OAuth2User> userService;
@@ -31,9 +32,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private ObjectMapper objectMapper;
 
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/login/**", "/oauth2/**").permitAll()
                 .antMatchers("/api/v1/**").authenticated()
@@ -56,5 +56,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .csrf().disable()
                 .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
+        return http.build();
     }
 }
