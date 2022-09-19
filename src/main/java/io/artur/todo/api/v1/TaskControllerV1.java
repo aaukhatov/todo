@@ -49,7 +49,7 @@ public class TaskControllerV1 {
     @PostMapping("/tasks")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<TaskResponse> create(@RequestBody @Valid TaskCreateRequest request,
-                               @AuthenticationPrincipal Jwt jwt) {
+                                            @AuthenticationPrincipal Jwt jwt) {
 
         Task task = taskService.create(request, jwt.getClaim("id"));
         return ApiResponse.result(new TaskResponse(task.getId(), task.getTitle(), task.getDescription()));
@@ -58,8 +58,8 @@ public class TaskControllerV1 {
     @PutMapping("/tasks/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<TaskResponse> update(@PathVariable("id") String taskId,
-                               @RequestBody @Valid TaskUpdateRequest request,
-                               @AuthenticationPrincipal Jwt jwt) {
+                                            @RequestBody @Valid TaskUpdateRequest request,
+                                            @AuthenticationPrincipal Jwt jwt) {
 
         Task task = taskService.update(taskId, jwt.getClaim("id"), request);
         return ApiResponse.result(new TaskResponse(task.getId(), task.getTitle(), task.getDescription()));
